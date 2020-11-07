@@ -18,13 +18,7 @@ using namespace pcl;
 using namespace std;
 typedef PointXYZ PoinT;
 
-int *rand_rgb(){//随机产生颜色
-	int *rgb = new int[3];	
-	rgb[0] = rand() % 255;
-	rgb[1] = rand() % 255;
-	rgb[2] = rand() % 255;
-	return rgb;
-}
+
 int main(){
 	//点云的读取*********************************************************
 	PointCloud<PoinT>::Ptr cloud(new PointCloud<PoinT>);
@@ -34,6 +28,16 @@ int main(){
 		return 0;
 	}
     else cout << "open pcd file!" <<endl;
+	
+ // 定义读取对象
+        pcl::PCDReader reader;
+        // 读取点云文件
+        reader.read<pcl::PointXYZ> ("/home/shouyiyang/桌面/视觉实习生任务/任务4/点云/1.pcd",*cloud);
+        reader.read<pcl::PointXYZ> ("/home/shouyiyang/桌面/视觉实习生任务/任务4/点云/2.pcd",*cloud);
+        reader.read<pcl::PointXYZ> ("/home/shouyiyang/桌面/视觉实习生任务/任务4/点云/3.pcd",*cloud);
+        reader.read<pcl::PointXYZ> ("/home/shouyiyang/桌面/视觉实习生任务/任务4/点云/4.pcd",*cloud);
+        reader.read<pcl::PointXYZ> ("/home/shouyiyang/桌面/视觉实习生任务/任务4/点云/5.pcd",*cloud);
+
     //体素化下采样******************************************************
 	VoxelGrid<PoinT> vox;
 	PointCloud<PoinT>::Ptr vox_cloud(new PointCloud<PoinT>);
@@ -82,10 +86,9 @@ int main(){
 		//*****************************
 		*sor_cloud = *ext_cloud_rest;
 		stringstream ss;
-		ss <<"C:\\Users\\Administrator\\Desktop\\"<<"ext_plane_clouds" << j << ".pcd";//路径加文件名和后缀
+		ss <<"/home/shouyiyang/桌面/视觉实习生任务/任务4/点云/" << j << ".pcd";//路径加文件名和后缀
 		io::savePCDFileASCII(ss.str(), *ext_cloud);//提取的平面点云写出
-		int *rgb = rand_rgb();//随机生成0-255的颜色值
-		visualization::PointCloudColorHandlerCustom<PoinT>rgb1(ext_cloud,rgb[0],rgb[1],rgb[2]);//提取的平面不同彩色展示
+		visualization::PointCloudColorHandlerCustom<PoinT>rgb1(ext_cloud,rgb[0],rgb[1],rgb[2]);
 		delete[]rgb;
 		viewer->addPointCloud(ext_cloud, rgb1,ss.str());
 		j++;
@@ -111,7 +114,7 @@ int main(){
 		vector<int> ece_inlier_ext = ece_inlier[i].indices;
 		copyPointCloud(*sor_cloud, ece_inlier_ext, *cloud_copy);//按照索引提取点云数据
 		stringstream ss1;
-		ss1 <<"C:\\Users\\Administrator\\Desktop\\"<< "EuclideanCluster_clouds" << j<<".pcd";
+		ss1 <<"/home/shouyiyang/桌面/视觉实习生任务/任务4/点云/" << j<<".pcd";
 		io::savePCDFileASCII(ss1.str(), *ext_cloud);//欧式聚类结果写出
 		int *rgb1 = rand_rgb();
 		visualization::PointCloudColorHandlerCustom<PoinT>rgb2(ext_cloud, rgb1[0], rgb1[1], rgb1[2]);
@@ -123,56 +126,3 @@ int main(){
 	return 0;
 }
 
-
-
-/*
-#include<iostream>
-#include<pcl/io/pcd_io.h>
-#include<pcl/point_types.h>
-#include <opencv2/core/core.hpp>
-#include <opencv2/calib3d/calib3d.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <pcl/point_types.h>
-#include <pcl/common/common_headers.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/cloud_viewer.h>
-#include <pcl/segmentation/extract_clusters.h>
-#include <pcl/filters/extract_indices.h>
-#include <pcl/segmentation/sac_segmentation.h>
-#include <boost/thread/thread.hpp>
- 
-using namespace pcl;
- 
-boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer1(new pcl::visualization::PCLVisualizer("3D Viewer"));
- 
-int main()
-{
-
-    //定义点云数据
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
- 
-    // 定义读取对象
-    pcl::PCDReader reader;
-    // 读取点云文件
-    reader.read<pcl::PointXYZ> ("/home/shouyiyang/桌面/视觉实习生任务/任务4/点云/1.pcd",*cloud);
-    //reader.read<pcl::PointXYZ> ("/home/shouyiyang/桌面/视觉实习生任务/任务4/点云/2.pcd",*cloud);
-    //reader.read<pcl::PointXYZ> ("/home/shouyiyang/桌面/视觉实习生任务/任务4/点云/3.pcd",*cloud);
-    //reader.read<pcl::PointXYZ> ("/home/shouyiyang/桌面/视觉实习生任务/任务4/点云/4.pcd",*cloud);
-    //reader.read<pcl::PointXYZ> ("/home/shouyiyang/桌面/视觉实习生任务/任务4/点云/5.pcd",*cloud);
-
-    while(true)
-    {
- 
-        viewer1->removeAllPointClouds();  // 移除当前所有点云
-        viewer1->addPointCloud(cloud, "test");  
-        viewer1->updatePointCloud(cloud, "test"); 
-        viewer1->spinOnce(0.0000000000001);
-        
-
-    }
- 
-}
-
-*/
